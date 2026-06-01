@@ -1,0 +1,248 @@
+---
+infoPluginSteps:
+  - name: "Business_Partner_Code_Gowri"
+    steps:
+      - id: "Get_bp"
+        infoPluginName: "Get SAP Business One Access Token"
+        namedParameterExpressions:
+          - name: "baseUrl"
+            expression: "${config.SAP_S4HANA_BASE_URL}"
+            type: "java.lang.String"
+          - name: "headers"
+            expression: |2-
+
+              {
+                  "Accept": "application/json",
+                  "sap-client": "500",
+                  "Authorization": "Basic UkNIQU5EOnN1dmFmMUoxNjc0MiE="
+              }
+            type: "java.util.Map"
+          - name: "httpMethod"
+            expression: "GET"
+            type: "java.lang.String"
+          - name: "path"
+            expression: "/sap/opu/odata/sap/API_BUSINESS_PARTNER/A_BusinessPartner"
+            type: "java.lang.String"
+          - name: "queryParameters"
+            expression: |2-
+
+              {
+                "$select": "BusinessPartner,BusinessPartnerFullName,Customer,Supplier",
+                "$filter": "BusinessPartner eq '${parameters.BusinessPartner}'",
+                "$format": "json"
+              }
+            type: "java.util.Map"
+          - name: "requestBody"
+            expression: |2-
+
+              {}
+            type: "java.lang.String"
+    aggregatedResponse: |-
+      <#if response.Get_bp.body.d.results?has_content>
+      <#assign bp = response.Get_bp.body.d.results[0]>
+      {
+        "BusinessPartner": "${bp.BusinessPartner}",
+        "BusinessPartnerName": "${bp.BusinessPartnerFullName}"
+      }
+      <#else>
+      {
+        "message": "Customer not found"
+      }
+      </#if>
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "Something went wrong while retrieving customer details. Please\
+            \ verify the Business Partner information and try again."
+  - name: "MyWave_AI_Assistant_tool_dumy_weather"
+    steps: []
+    aggregatedResponse: |-
+      {
+        "location": "${parameters.location}",
+        "temperature": 40
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "There was a problem"
+  - name: "Get_Billing_Details_SP"
+    steps:
+      - id: "Get_Outbound_Details"
+        infoPluginName: "GenericHttpInfoPlugin"
+        namedParameterExpressions:
+          - name: "baseUrl"
+            expression: "${config.SAP_S4HANA_BASE_URL}"
+            type: "java.lang.String"
+          - name: "path"
+            expression: "/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV/A_OutbDeliveryHeader"
+            type: "java.lang.String"
+          - name: "httpMethod"
+            expression: "GET"
+            type: "java.lang.String"
+          - name: "headers"
+            expression: |2-
+
+              {
+                  "Accept": "application/json",
+                  "sap-client": "500",
+                  "Authorization": "Basic UkNIQU5EOnN1dmFmMUoxNjc0MiE="
+              }
+            type: "java.util.Map"
+          - name: "queryParameters"
+            expression: |-
+              <#if parameters.deliveryFromDate?has_content && parameters.deliveryToDate?has_content>
+              {
+                "$select": "DeliveryDocument,ShipToParty,SoldToParty,ActualGoodsMovementDate,DeliveryDocumentType,OverallSDProcessStatus",
+                "$filter": "ActualGoodsMovementDate ge datetime'${parameters.deliveryFromDate}T00:00:00' and ActualGoodsMovementDate le datetime'${parameters.deliveryToDate}T23:59:59'",
+                "$format": "json"
+              }
+              <#else>
+              {}
+              </#if>
+            type: "java.util.Map"
+          - name: "requestBody"
+            expression: |2-
+
+              {}
+            type: "java.lang.String"
+      - id: "Get_Billing_Details"
+        infoPluginName: "GenericHttpInfoPlugin"
+        namedParameterExpressions:
+          - name: "baseUrl"
+            expression: "${config.SAP_S4HANA_BASE_URL}"
+            type: "java.lang.String"
+          - name: "path"
+            expression: "/sap/opu/odata/sap/API_BILLING_DOCUMENT_SRV/A_BillingDocumentItem"
+            type: "java.lang.String"
+          - name: "httpMethod"
+            expression: "GET"
+            type: "java.lang.String"
+          - name: "headers"
+            expression: |2-
+
+              {
+                  "Accept": "application/json",
+                  "sap-client": "500",
+                  "Authorization": "Basic UkNIQU5EOnN1dmFmMUoxNjc0MiE="
+              }
+            type: "java.util.Map"
+          - name: "queryParameters"
+            expression: "<#if response.Get_Outbound_Details.body.d.results?has_content>\n\
+              <#assign filterString = \n  '(' + \n  response.Get_Outbound_Details.body.d.results\n\
+              \    ?map(d -> \"ReferenceSDDocument eq '\" + d.DeliveryDocument + \"\
+              '\")\n    ?join(' or ')\n  + \") and ReferenceSDDocumentCategory eq\
+              \ 'J'\"\n>\n{\n  \"$select\": \"BillingDocument,ReferenceSDDocument,ReferenceSDDocumentCategory\"\
+              ,\n  \"$filter\": \"${filterString}\",\n  \"$format\": \"json\"\n}\n\
+              <#else>\n{\n  \"$filter\": \"1 eq 2\",\n  \"$format\": \"json\"\n}\n\
+              </#if>"
+            type: "java.util.Map"
+          - name: "requestBody"
+            expression: |2-
+
+              {}
+            type: "java.lang.String"
+    aggregatedResponse: "<#-- ========================= -->\n<#-- CHECK STATUS = 200\
+      \ ONLY -->\n<#-- ========================= -->\n\n<#assign outboundResults =\
+      \ []>\n<#if response.Get_Outbound_Details.statusCode == 200 \n    && response.Get_Outbound_Details.body?has_content\n\
+      \    && response.Get_Outbound_Details.body.d?has_content\n    && response.Get_Outbound_Details.body.d.results?has_content>\n\
+      \n  <#assign outboundResults = response.Get_Outbound_Details.body.d.results>\n\
+      </#if>\n\n\n<#assign billingResults = []>\n<#if response.Get_Billing_Details.statusCode\
+      \ == 200 \n    && response.Get_Billing_Details.body?has_content\n    && response.Get_Billing_Details.body.d?has_content\n\
+      \    && response.Get_Billing_Details.body.d.results?has_content>\n\n  <#assign\
+      \ billingResults = response.Get_Billing_Details.body.d.results>\n</#if>\n\n\n\
+      <#-- ========================= -->\n<#-- BUILD BILLING MAP -->\n<#-- =========================\
+      \ -->\n\n<#assign billingByDelivery = {}>\n\n<#if billingResults?has_content>\n\
+      \  <#list billingResults as bill>\n    <#if bill.ReferenceSDDocument?has_content>\n\
+      \      <#assign existing = (billingByDelivery[bill.ReferenceSDDocument])![]>\n\
+      \      <#assign billingByDelivery = billingByDelivery + {\n        (bill.ReferenceSDDocument):\
+      \ (existing + [bill])\n      }>\n    </#if>\n  </#list>\n</#if>\n\n\n<#-- =========================\
+      \ -->\n<#-- FINAL RESPONSE -->\n<#-- ========================= -->\n\n<#if outboundResults?has_content>\n\
+      \n{\n  \"totalOutboundRecords\": ${outboundResults?size},\n  \"totalBillingRecords\"\
+      :  ${billingResults?size},\n\n  \"deliveries\": [\n    <#list outboundResults\
+      \ as out>\n\n      <#assign relatedBilling = (billingByDelivery[out.DeliveryDocument!''\
+      \ ])![]>\n\n      {\n        \"DeliveryDocument\":        \"${out.DeliveryDocument!''}\"\
+      ,\n        \"ShipToParty\":             \"${out.ShipToParty!''}\",\n       \
+      \ \"SoldToParty\":             \"${out.SoldToParty!''}\",\n        \"ActualGoodsMovementDate\"\
+      : \"${out.ActualGoodsMovementDate!''}\",\n        \"DeliveryDocumentType\":\
+      \    \"${out.DeliveryDocumentType!''}\",\n        \"OverallSDProcessStatus\"\
+      :  \"${out.OverallSDProcessStatus!''}\",\n\n        \"billingDetails\": [\n\
+      \          <#if relatedBilling?has_content>\n            <#list relatedBilling\
+      \ as bill>\n              {\n                \"BillingDocument\":          \
+      \   \"${bill.BillingDocument!''}\",\n                \"ReferenceSDDocument\"\
+      :         \"${bill.ReferenceSDDocument!''}\",\n                \"ReferenceSDDocumentCategory\"\
+      : \"${bill.ReferenceSDDocumentCategory!''}\"\n              }<#if bill_has_next>,</#if>\n\
+      \            </#list>\n          </#if>\n        ],\n\n        \"isBilled\"\
+      : ${(relatedBilling?size gt 0)?c},\n\n        \"isEligibleForBilling\":\n  \
+      \        ${(out.OverallSDProcessStatus!'' == \"C\" && relatedBilling?size ==\
+      \ 0)?c}\n\n      }<#if out_has_next>,</#if>\n\n    </#list>\n  ]\n}\n\n<#else>\n\
+      \n{\n  \"message\": \"No outbound deliveries found\"\n}\n\n</#if>"
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "Infoplugin issue, Facing some issues while fetching the billing\
+            \ details. "
+  - name: "Create_an_activity_Appointment"
+    steps:
+      - id: "postCreateActivity"
+        infoPluginName: "GenericHttpInfoPlugin"
+        namedParameterExpressions:
+          - name: "baseUrl"
+            expression: "http://localhost:3001"
+            type: "java.lang.String"
+          - name: "path"
+            expression: "/sap/opu/odata/sap/API_ACTIVITY_APPOINTMENT_SRV/A_AppointmentActivity"
+            type: "java.lang.String"
+          - name: "httpMethod"
+            expression: "POST"
+            type: "java.lang.String"
+          - name: "headers"
+            expression: |2-
+
+              {
+                  "Content-Type":"application/json"
+              }
+            type: "java.util.Map"
+          - name: "queryParameters"
+            expression: |2-
+
+              {}
+            type: "java.util.Map"
+          - name: "requestBody"
+            expression: |2-
+
+              {}
+            type: "java.lang.String"
+    aggregatedResponse: |-
+      <#assign postCreateActivityStatusCode = response.postCreateActivity.statusCode>
+      <#assign postCreateActivitySuccess = (postCreateActivityStatusCode gte 200 && postCreateActivityStatusCode lt 300)>
+      {
+        "postCreateActivityStatus": ${postCreateActivitySuccess?then('true','false')},
+        <#if postCreateActivitySuccess && response.postCreateActivity.body??>
+        <#assign postCreateActivityBody = response.postCreateActivity.body>
+        "postCreateActivity": {
+          "d": {
+            "ActivityID": "${(postCreateActivityBody.d.ActivityID)!''}",
+            "BusinessPartner": "${(postCreateActivityBody.d.BusinessPartner)!''}",
+            "ActivityType": "${(postCreateActivityBody.d.ActivityType)!''}",
+            "Status": "${(postCreateActivityBody.d.Status)!''}"
+          }
+        },
+        </#if>
+        "postCreateActivityStatusCode": ${postCreateActivityStatusCode}
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "Unable to create the visit activity at the moment. Please\
+            \ review the details and try again."
+infoPlugins:
+  - name: "Get SAP Business One Access Token"
+    type: "EXTERNAL_LIBRARY"
+    infoPluginExternalName: "GenericHttpInfoPlugin"
+  - name: "GenericHttpInfoPlugin"
+    type: "EXTERNAL_LIBRARY"
+    infoPluginExternalName: "GenericHttpInfoPlugin"

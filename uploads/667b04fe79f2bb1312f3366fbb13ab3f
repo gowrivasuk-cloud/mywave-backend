@@ -1,0 +1,1649 @@
+---
+infoPluginSteps:
+  - name: "Business_Partner_Code_Gowri"
+    steps:
+      - id: "Get_bp"
+        infoPluginName: "Get SAP Business One Access Token"
+        namedParameterExpressions:
+          - name: "baseUrl"
+            expression: "${config.SAP_S4HANA_BASE_URL}"
+            type: "java.lang.String"
+          - name: "headers"
+            expression: |2-
+
+              {
+                  "Accept": "application/json",
+                  "sap-client": "500",
+                  "Authorization": "Basic UkNIQU5EOnN1dmFmMUoxNjc0MiE="
+              }
+            type: "java.util.Map"
+          - name: "httpMethod"
+            expression: "GET"
+            type: "java.lang.String"
+          - name: "path"
+            expression: "/sap/opu/odata/sap/API_BUSINESS_PARTNER/A_BusinessPartner"
+            type: "java.lang.String"
+          - name: "queryParameters"
+            expression: |2-
+
+              {
+                "$select": "BusinessPartner,BusinessPartnerFullName,Customer,Supplier",
+                "$filter": "BusinessPartner eq '${parameters.BusinessPartner}'",
+                "$format": "json"
+              }
+            type: "java.util.Map"
+          - name: "requestBody"
+            expression: |2-
+
+              {}
+            type: "java.lang.String"
+    aggregatedResponse: |-
+      <#if response.Get_bp.body.d.results?has_content>
+      <#assign bp = response.Get_bp.body.d.results[0]>
+      {
+        "BusinessPartner": "${bp.BusinessPartner}",
+        "BusinessPartnerName": "${bp.BusinessPartnerFullName}"
+      }
+      <#else>
+      {
+        "message": "Customer not found"
+      }
+      </#if>
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "Something went wrong while retrieving customer details. Please\
+            \ verify the Business Partner information and try again."
+  - name: "paypal_cif2_search_vendors"
+    steps: []
+    aggregatedResponse: |-
+      {
+      "vendors": {
+            "VND-001001": {
+              "vendor_id": "VND-001001",
+              "vendor_name": "Meta Platforms Inc.",
+              "legal_name": "Meta Platforms, Inc.",
+              "dba_names": ["Facebook", "Instagram", "Meta"],
+              "vendor_type": "paid_media",
+              "categories": ["social_media", "display", "video"],
+              "status": "active",
+              "country": "USA",
+              "address": "1 Hacker Way, Menlo Park, CA 94025",
+              "primary_contact_name": "Enterprise Sales Team",
+              "primary_contact_email": "enterprise-sales@meta.com",
+              "payment_terms": "Net 60",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-META-001",
+              "tax_id": "XX-XXX1234",
+              "onboarding_date": "2015-06-01",
+              "last_review_date": "2025-12-15",
+              "annual_spend_limit": 5000000,
+              "risk_rating": "low"
+            },
+            "VND-001002": {
+              "vendor_id": "VND-001002",
+              "vendor_name": "Google LLC",
+              "legal_name": "Google LLC",
+              "dba_names": ["Google Ads", "YouTube", "Google Marketing Platform"],
+              "vendor_type": "paid_media",
+              "categories": ["search", "display", "video", "programmatic"],
+              "status": "active",
+              "country": "USA",
+              "address": "1600 Amphitheatre Parkway, Mountain View, CA 94043",
+              "primary_contact_name": "Google Ads Support",
+              "primary_contact_email": "ads-support@google.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-GOOG-001",
+              "tax_id": "XX-XXX5678",
+              "onboarding_date": "2012-01-15",
+              "last_review_date": "2025-11-20",
+              "annual_spend_limit": 8000000,
+              "risk_rating": "low"
+            },
+            "VND-001003": {
+              "vendor_id": "VND-001003",
+              "vendor_name": "The Trade Desk Inc.",
+              "legal_name": "The Trade Desk, Inc.",
+              "dba_names": ["TTD", "Trade Desk"],
+              "vendor_type": "paid_media",
+              "categories": ["programmatic", "display", "video"],
+              "status": "active",
+              "country": "USA",
+              "address": "42 N. Chestnut St., Ventura, CA 93001",
+              "primary_contact_name": "Client Services",
+              "primary_contact_email": "clientservices@thetradedesk.com",
+              "payment_terms": "Net 45",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-TTD-001",
+              "tax_id": "XX-XXX9012",
+              "onboarding_date": "2018-03-10",
+              "last_review_date": "2025-10-05",
+              "annual_spend_limit": 2000000,
+              "risk_rating": "low"
+            },
+            "VND-001004": {
+              "vendor_id": "VND-001004",
+              "vendor_name": "Microsoft Advertising",
+              "legal_name": "Microsoft Corporation",
+              "dba_names": ["Bing Ads", "Microsoft Ads", "LinkedIn Ads"],
+              "vendor_type": "paid_media",
+              "categories": ["search", "display", "social_media"],
+              "status": "active",
+              "country": "USA",
+              "address": "One Microsoft Way, Redmond, WA 98052",
+              "primary_contact_name": "Advertising Sales",
+              "primary_contact_email": "adsales@microsoft.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-MSFT-001",
+              "tax_id": "XX-XXX3456",
+              "onboarding_date": "2014-08-22",
+              "last_review_date": "2026-01-10",
+              "annual_spend_limit": 3000000,
+              "risk_rating": "low"
+            },
+            "VND-001005": {
+              "vendor_id": "VND-001005",
+              "vendor_name": "Amazon Advertising",
+              "legal_name": "Amazon.com Services LLC",
+              "dba_names": ["Amazon Ads", "AWS Advertising"],
+              "vendor_type": "paid_media",
+              "categories": ["display", "video", "programmatic", "streaming"],
+              "status": "active",
+              "country": "USA",
+              "address": "410 Terry Avenue North, Seattle, WA 98109",
+              "primary_contact_name": "Amazon Ads Support",
+              "primary_contact_email": "advertising-support@amazon.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-AMZN-001",
+              "tax_id": "XX-XXX7890",
+              "onboarding_date": "2017-04-15",
+              "last_review_date": "2025-12-01",
+              "annual_spend_limit": 4000000,
+              "risk_rating": "low"
+            },
+            "VND-001006": {
+              "vendor_id": "VND-001006",
+              "vendor_name": "TikTok for Business",
+              "legal_name": "TikTok Inc.",
+              "dba_names": ["TikTok Ads", "ByteDance"],
+              "vendor_type": "paid_media",
+              "categories": ["social_media", "video"],
+              "status": "active",
+              "country": "USA",
+              "address": "5800 Bristol Parkway, Culver City, CA 90230",
+              "primary_contact_name": "Business Solutions",
+              "primary_contact_email": "business@tiktok.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-TIKTOK-001",
+              "tax_id": "XX-XXX2345",
+              "onboarding_date": "2021-02-28",
+              "last_review_date": "2025-09-15",
+              "annual_spend_limit": 1500000,
+              "risk_rating": "medium"
+            },
+            "VND-001007": {
+              "vendor_id": "VND-001007",
+              "vendor_name": "Spotify Advertising",
+              "legal_name": "Spotify USA Inc.",
+              "dba_names": ["Spotify Ads", "Spotify Ad Studio"],
+              "vendor_type": "paid_media",
+              "categories": ["streaming", "podcast", "audio"],
+              "status": "active",
+              "country": "USA",
+              "address": "4 World Trade Center, New York, NY 10007",
+              "primary_contact_name": "Ad Sales",
+              "primary_contact_email": "adsales@spotify.com",
+              "payment_terms": "Net 45",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-SPOT-001",
+              "tax_id": "XX-XXX6789",
+              "onboarding_date": "2020-05-10",
+              "last_review_date": "2025-11-30",
+              "annual_spend_limit": 1000000,
+              "risk_rating": "low"
+            },
+            "VND-001008": {
+              "vendor_id": "VND-001008",
+              "vendor_name": "Snap Inc.",
+              "legal_name": "Snap Inc.",
+              "dba_names": ["Snapchat", "Snapchat Ads"],
+              "vendor_type": "paid_media",
+              "categories": ["social_media", "video", "display"],
+              "status": "active",
+              "country": "USA",
+              "address": "3000 31st Street, Santa Monica, CA 90405",
+              "primary_contact_name": "Advertising Partnerships",
+              "primary_contact_email": "adspartnerships@snap.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-SNAP-001",
+              "tax_id": "XX-XXX4567",
+              "onboarding_date": "2019-07-20",
+              "last_review_date": "2025-10-25",
+              "annual_spend_limit": 800000,
+              "risk_rating": "low"
+            },
+            "VND-001009": {
+              "vendor_id": "VND-001009",
+              "vendor_name": "Pinterest Inc.",
+              "legal_name": "Pinterest, Inc.",
+              "dba_names": ["Pinterest Ads"],
+              "vendor_type": "paid_media",
+              "categories": ["social_media", "display"],
+              "status": "active",
+              "country": "USA",
+              "address": "651 Brannan Street, San Francisco, CA 94107",
+              "primary_contact_name": "Business Team",
+              "primary_contact_email": "business@pinterest.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-PIN-001",
+              "tax_id": "XX-XXX8901",
+              "onboarding_date": "2020-09-05",
+              "last_review_date": "2025-08-20",
+              "annual_spend_limit": 500000,
+              "risk_rating": "low"
+            },
+            "VND-001010": {
+              "vendor_id": "VND-001010",
+              "vendor_name": "Acme Media Solutions",
+              "legal_name": "Acme Media Solutions LLC",
+              "dba_names": ["Acme Media"],
+              "vendor_type": "paid_media",
+              "categories": ["display", "programmatic"],
+              "status": "inactive",
+              "country": "USA",
+              "address": "123 Main Street, Chicago, IL 60601",
+              "primary_contact_name": "Sales Team",
+              "primary_contact_email": "sales@acmemedia.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-ACME-001",
+              "tax_id": "XX-XXX0123",
+              "onboarding_date": "2022-01-15",
+              "last_review_date": "2025-06-01",
+              "annual_spend_limit": 200000,
+              "risk_rating": "high",
+              "inactive_reason": "Contract expired - pending renewal"
+            }
+          }
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "There was a problem"
+  - name: "paypal_cif2_get_requester_info"
+    steps: []
+    aggregatedResponse: |-
+      {
+      "requesters": {
+            "EMP-001234": {
+              "employee_id": "EMP-001234",
+              "full_name": "Emily Rogers",
+              "email": "erogers@paypal.com",
+              "department": "Marketing",
+              "job_title": "Senior Marketing Manager",
+              "cost_center": "MKT-220",
+              "country": "USA",
+              "location": "San Jose, CA",
+              "manager_id": "EMP-000891",
+              "manager_name": "Michael Chen",
+              "hire_date": "2019-03-15",
+              "last_login": "2026-02-02 08:45:00"
+            },
+            "EMP-001456": {
+              "employee_id": "EMP-001456",
+              "full_name": "Sarah Chen",
+              "email": "schen@paypal.com",
+              "department": "Marketing",
+              "job_title": "Digital Marketing Manager",
+              "cost_center": "MKT-320",
+              "country": "USA",
+              "location": "San Jose, CA",
+              "manager_id": "EMP-000891",
+              "manager_name": "Michael Chen",
+              "hire_date": "2020-06-01",
+              "last_login": "2026-02-02 09:15:00"
+            },
+            "EMP-001789": {
+              "employee_id": "EMP-001789",
+              "full_name": "James Wilson",
+              "email": "jwilson@paypal.com",
+              "department": "Brand Marketing",
+              "job_title": "Brand Campaign Manager",
+              "cost_center": "MKT-420",
+              "country": "USA",
+              "location": "Austin, TX",
+              "manager_id": "EMP-000756",
+              "manager_name": "Lisa Park",
+              "hire_date": "2021-01-10",
+              "last_login": "2026-02-01 17:30:00"
+            },
+            "EMP-002134": {
+              "employee_id": "EMP-002134",
+              "full_name": "Amanda Foster",
+              "email": "afoster@paypal.com",
+              "department": "Performance Marketing",
+              "job_title": "Performance Marketing Lead",
+              "cost_center": "MKT-520",
+              "country": "USA",
+              "location": "New York, NY",
+              "manager_id": "EMP-000891",
+              "manager_name": "Michael Chen",
+              "hire_date": "2018-09-20",
+              "last_login": "2026-02-02 08:00:00"
+            }
+          }
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "There was a problem"
+  - name: "paypal_cif2_get_tpe_status"
+    steps: []
+    aggregatedResponse: |-
+      {
+      "tpe_records": {
+            "VND-001001": {
+              "tpe_id": "TPE-2024-001001",
+              "vendor_id": "VND-001001",
+              "vendor_name": "Meta Platforms Inc.",
+              "status": "valid",
+              "risk_level": "low",
+              "effective_date": "2024-01-01",
+              "expiration_date": "2026-12-31",
+              "last_assessment_date": "2025-12-15",
+              "next_review_date": "2026-06-15",
+              "compliance_flags": [],
+              "approved_spend_limit": 5000000,
+              "approved_categories": ["social_media", "display", "video"],
+              "geographic_scope": ["USA", "EMEA", "APAC"],
+              "data_processing_agreement": true,
+              "security_assessment_complete": true,
+              "business_continuity_verified": true
+            },
+            "VND-001002": {
+              "tpe_id": "TPE-2024-001002",
+              "vendor_id": "VND-001002",
+              "vendor_name": "Google LLC",
+              "status": "valid",
+              "risk_level": "low",
+              "effective_date": "2024-01-01",
+              "expiration_date": "2026-12-31",
+              "last_assessment_date": "2025-11-20",
+              "next_review_date": "2026-05-20",
+              "compliance_flags": [],
+              "approved_spend_limit": 8000000,
+              "approved_categories": ["search", "display", "video", "programmatic"],
+              "geographic_scope": ["Global"],
+              "data_processing_agreement": true,
+              "security_assessment_complete": true,
+              "business_continuity_verified": true
+            },
+            "VND-001003": {
+              "tpe_id": "TPE-2024-001003",
+              "vendor_id": "VND-001003",
+              "vendor_name": "The Trade Desk Inc.",
+              "status": "valid",
+              "risk_level": "low",
+              "effective_date": "2024-03-01",
+              "expiration_date": "2026-02-28",
+              "last_assessment_date": "2025-10-05",
+              "next_review_date": "2026-02-15",
+              "compliance_flags": ["renewal_due_soon"],
+              "approved_spend_limit": 2000000,
+              "approved_categories": ["programmatic", "display", "video"],
+              "geographic_scope": ["USA", "EMEA"],
+              "data_processing_agreement": true,
+              "security_assessment_complete": true,
+              "business_continuity_verified": true
+            },
+            "VND-001004": {
+              "tpe_id": "TPE-2024-001004",
+              "vendor_id": "VND-001004",
+              "vendor_name": "Microsoft Advertising",
+              "status": "valid",
+              "risk_level": "low",
+              "effective_date": "2024-02-01",
+              "expiration_date": "2027-01-31",
+              "last_assessment_date": "2026-01-10",
+              "next_review_date": "2026-07-10",
+              "compliance_flags": [],
+              "approved_spend_limit": 3000000,
+              "approved_categories": ["search", "display", "social_media"],
+              "geographic_scope": ["Global"],
+              "data_processing_agreement": true,
+              "security_assessment_complete": true,
+              "business_continuity_verified": true
+            },
+            "VND-001005": {
+              "tpe_id": "TPE-2024-001005",
+              "vendor_id": "VND-001005",
+              "vendor_name": "Amazon Advertising",
+              "status": "valid",
+              "risk_level": "low",
+              "effective_date": "2024-01-15",
+              "expiration_date": "2026-12-31",
+              "last_assessment_date": "2025-12-01",
+              "next_review_date": "2026-06-01",
+              "compliance_flags": [],
+              "approved_spend_limit": 4000000,
+              "approved_categories": ["display", "video", "programmatic", "streaming"],
+              "geographic_scope": ["USA", "EMEA", "APAC"],
+              "data_processing_agreement": true,
+              "security_assessment_complete": true,
+              "business_continuity_verified": true
+            },
+            "VND-001006": {
+              "tpe_id": "TPE-2024-001006",
+              "vendor_id": "VND-001006",
+              "vendor_name": "TikTok for Business",
+              "status": "valid",
+              "risk_level": "medium",
+              "effective_date": "2024-06-01",
+              "expiration_date": "2026-05-31",
+              "last_assessment_date": "2025-09-15",
+              "next_review_date": "2026-03-15",
+              "compliance_flags": ["enhanced_monitoring"],
+              "approved_spend_limit": 1500000,
+              "approved_categories": ["social_media", "video"],
+              "geographic_scope": ["USA"],
+              "data_processing_agreement": true,
+              "security_assessment_complete": true,
+              "business_continuity_verified": true
+            },
+            "VND-001007": {
+              "tpe_id": "TPE-2024-001007",
+              "vendor_id": "VND-001007",
+              "vendor_name": "Spotify Advertising",
+              "status": "valid",
+              "risk_level": "low",
+              "effective_date": "2024-04-01",
+              "expiration_date": "2026-03-31",
+              "last_assessment_date": "2025-11-30",
+              "next_review_date": "2026-02-28",
+              "compliance_flags": ["renewal_due_soon"],
+              "approved_spend_limit": 1000000,
+              "approved_categories": ["streaming", "podcast", "audio"],
+              "geographic_scope": ["USA", "EMEA"],
+              "data_processing_agreement": true,
+              "security_assessment_complete": true,
+              "business_continuity_verified": true
+            },
+            "VND-001008": {
+              "tpe_id": "TPE-2024-001008",
+              "vendor_id": "VND-001008",
+              "vendor_name": "Snap Inc.",
+              "status": "valid",
+              "risk_level": "low",
+              "effective_date": "2024-05-01",
+              "expiration_date": "2026-04-30",
+              "last_assessment_date": "2025-10-25",
+              "next_review_date": "2026-04-01",
+              "compliance_flags": [],
+              "approved_spend_limit": 800000,
+              "approved_categories": ["social_media", "video", "display"],
+              "geographic_scope": ["USA", "EMEA"],
+              "data_processing_agreement": true,
+              "security_assessment_complete": true,
+              "business_continuity_verified": true
+            },
+            "VND-001009": {
+              "tpe_id": "TPE-2024-001009",
+              "vendor_id": "VND-001009",
+              "vendor_name": "Pinterest Inc.",
+              "status": "valid",
+              "risk_level": "low",
+              "effective_date": "2024-07-01",
+              "expiration_date": "2026-06-30",
+              "last_assessment_date": "2025-08-20",
+              "next_review_date": "2026-04-20",
+              "compliance_flags": [],
+              "approved_spend_limit": 500000,
+              "approved_categories": ["social_media", "display"],
+              "geographic_scope": ["USA"],
+              "data_processing_agreement": true,
+              "security_assessment_complete": true,
+              "business_continuity_verified": true
+            },
+            "VND-001010": {
+              "tpe_id": "TPE-2023-001010",
+              "vendor_id": "VND-001010",
+              "vendor_name": "Acme Media Solutions",
+              "status": "expired",
+              "risk_level": "high",
+              "effective_date": "2023-01-01",
+              "expiration_date": "2025-12-31",
+              "last_assessment_date": "2025-06-01",
+              "next_review_date": "2026-01-01",
+              "compliance_flags": ["tpe_expired", "contract_expired", "requires_reassessment"],
+              "approved_spend_limit": 0,
+              "approved_categories": [],
+              "geographic_scope": [],
+              "data_processing_agreement": false,
+              "security_assessment_complete": false,
+              "business_continuity_verified": false
+            }
+          }
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "There was a problem"
+  - name: "paypal_cif2_create_purchase_request"
+    steps: []
+    aggregatedResponse: |-
+      {
+      "purchase_request": {
+            "PR-2026-000001": {
+              "request_id": "PR-2026-000001",
+              "status": "draft",
+              "vendor_id": "${parameters.vendor_id}",
+              "vendor_name": "Meta Platforms Inc.",
+              "requester_id": "${parameters.requester_id}",
+              "requester_name": "Emily Rogers",
+              "category": "${parameters.category}",
+              "campaign_name": "${parameters.campaign_name}",
+              "estimated_spend": "${parameters.estimated_spend}",
+              "currency": "USD",
+              "start_date": "2026-04-01",
+              "end_date": "2026-06-30",
+              "cost_center": "${parameters.cost_center}",
+              "io_number": "${parameters.io_number}",
+              "payment_terms": "Net 60",
+              "capped_spend": true,
+              "created_date": "2026-02-02 10:00:00",
+              "last_updated": "2026-02-02 10:00:00",
+              "approval_path": [
+                {"order": 1, "role": "Marketing Manager", "approver_name": "Michael Chen", "status": "pending"},
+                {"order": 2, "role": "Procurement Manager", "approver_name": "David Kim", "status": "pending"}
+              ],
+              "notes": "Q2 brand campaign - continuation of successful Q1 strategy"
+            }
+          }
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "There was a problem"
+  - name: "paypal_cif2_get_approved_vendors_list"
+    steps: []
+    aggregatedResponse: |-
+      {
+      "active_vendors": {
+            "VND-001001": {
+              "vendor_id": "VND-001001",
+              "vendor_name": "Meta Platforms Inc.",
+              "legal_name": "Meta Platforms, Inc.",
+              "dba_names": ["Facebook", "Instagram", "Meta"],
+              "vendor_type": "paid_media",
+              "categories": ["social_media", "display", "video"],
+              "status": "active",
+              "country": "USA",
+              "address": "1 Hacker Way, Menlo Park, CA 94025",
+              "primary_contact_name": "Enterprise Sales Team",
+              "primary_contact_email": "enterprise-sales@meta.com",
+              "payment_terms": "Net 60",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-META-001",
+              "tax_id": "XX-XXX1234",
+              "onboarding_date": "2015-06-01",
+              "last_review_date": "2025-12-15",
+              "annual_spend_limit": 5000000,
+              "risk_rating": "low"
+            },
+            "VND-001002": {
+              "vendor_id": "VND-001002",
+              "vendor_name": "Google LLC",
+              "legal_name": "Google LLC",
+              "dba_names": ["Google Ads", "YouTube", "Google Marketing Platform"],
+              "vendor_type": "paid_media",
+              "categories": ["search", "display", "video", "programmatic"],
+              "status": "active",
+              "country": "USA",
+              "address": "1600 Amphitheatre Parkway, Mountain View, CA 94043",
+              "primary_contact_name": "Google Ads Support",
+              "primary_contact_email": "ads-support@google.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-GOOG-001",
+              "tax_id": "XX-XXX5678",
+              "onboarding_date": "2012-01-15",
+              "last_review_date": "2025-11-20",
+              "annual_spend_limit": 8000000,
+              "risk_rating": "low"
+            },
+            "VND-001003": {
+              "vendor_id": "VND-001003",
+              "vendor_name": "The Trade Desk Inc.",
+              "legal_name": "The Trade Desk, Inc.",
+              "dba_names": ["TTD", "Trade Desk"],
+              "vendor_type": "paid_media",
+              "categories": ["programmatic", "display", "video"],
+              "status": "active",
+              "country": "USA",
+              "address": "42 N. Chestnut St., Ventura, CA 93001",
+              "primary_contact_name": "Client Services",
+              "primary_contact_email": "clientservices@thetradedesk.com",
+              "payment_terms": "Net 45",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-TTD-001",
+              "tax_id": "XX-XXX9012",
+              "onboarding_date": "2018-03-10",
+              "last_review_date": "2025-10-05",
+              "annual_spend_limit": 2000000,
+              "risk_rating": "low"
+            },
+            "VND-001004": {
+              "vendor_id": "VND-001004",
+              "vendor_name": "Microsoft Advertising",
+              "legal_name": "Microsoft Corporation",
+              "dba_names": ["Bing Ads", "Microsoft Ads", "LinkedIn Ads"],
+              "vendor_type": "paid_media",
+              "categories": ["search", "display", "social_media"],
+              "status": "active",
+              "country": "USA",
+              "address": "One Microsoft Way, Redmond, WA 98052",
+              "primary_contact_name": "Advertising Sales",
+              "primary_contact_email": "adsales@microsoft.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-MSFT-001",
+              "tax_id": "XX-XXX3456",
+              "onboarding_date": "2014-08-22",
+              "last_review_date": "2026-01-10",
+              "annual_spend_limit": 3000000,
+              "risk_rating": "low"
+            },
+            "VND-001005": {
+              "vendor_id": "VND-001005",
+              "vendor_name": "Amazon Advertising",
+              "legal_name": "Amazon.com Services LLC",
+              "dba_names": ["Amazon Ads", "AWS Advertising"],
+              "vendor_type": "paid_media",
+              "categories": ["display", "video", "programmatic", "streaming"],
+              "status": "active",
+              "country": "USA",
+              "address": "410 Terry Avenue North, Seattle, WA 98109",
+              "primary_contact_name": "Amazon Ads Support",
+              "primary_contact_email": "advertising-support@amazon.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-AMZN-001",
+              "tax_id": "XX-XXX7890",
+              "onboarding_date": "2017-04-15",
+              "last_review_date": "2025-12-01",
+              "annual_spend_limit": 4000000,
+              "risk_rating": "low"
+            },
+            "VND-001006": {
+              "vendor_id": "VND-001006",
+              "vendor_name": "TikTok for Business",
+              "legal_name": "TikTok Inc.",
+              "dba_names": ["TikTok Ads", "ByteDance"],
+              "vendor_type": "paid_media",
+              "categories": ["social_media", "video"],
+              "status": "active",
+              "country": "USA",
+              "address": "5800 Bristol Parkway, Culver City, CA 90230",
+              "primary_contact_name": "Business Solutions",
+              "primary_contact_email": "business@tiktok.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-TIKTOK-001",
+              "tax_id": "XX-XXX2345",
+              "onboarding_date": "2021-02-28",
+              "last_review_date": "2025-09-15",
+              "annual_spend_limit": 1500000,
+              "risk_rating": "medium"
+            },
+            "VND-001007": {
+              "vendor_id": "VND-001007",
+              "vendor_name": "Spotify Advertising",
+              "legal_name": "Spotify USA Inc.",
+              "dba_names": ["Spotify Ads", "Spotify Ad Studio"],
+              "vendor_type": "paid_media",
+              "categories": ["streaming", "podcast", "audio"],
+              "status": "active",
+              "country": "USA",
+              "address": "4 World Trade Center, New York, NY 10007",
+              "primary_contact_name": "Ad Sales",
+              "primary_contact_email": "adsales@spotify.com",
+              "payment_terms": "Net 45",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-SPOT-001",
+              "tax_id": "XX-XXX6789",
+              "onboarding_date": "2020-05-10",
+              "last_review_date": "2025-11-30",
+              "annual_spend_limit": 1000000,
+              "risk_rating": "low"
+            },
+            "VND-001008": {
+              "vendor_id": "VND-001008",
+              "vendor_name": "Snap Inc.",
+              "legal_name": "Snap Inc.",
+              "dba_names": ["Snapchat", "Snapchat Ads"],
+              "vendor_type": "paid_media",
+              "categories": ["social_media", "video", "display"],
+              "status": "active",
+              "country": "USA",
+              "address": "3000 31st Street, Santa Monica, CA 90405",
+              "primary_contact_name": "Advertising Partnerships",
+              "primary_contact_email": "adspartnerships@snap.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-SNAP-001",
+              "tax_id": "XX-XXX4567",
+              "onboarding_date": "2019-07-20",
+              "last_review_date": "2025-10-25",
+              "annual_spend_limit": 800000,
+              "risk_rating": "low"
+            },
+            "VND-001009": {
+              "vendor_id": "VND-001009",
+              "vendor_name": "Pinterest Inc.",
+              "legal_name": "Pinterest, Inc.",
+              "dba_names": ["Pinterest Ads"],
+              "vendor_type": "paid_media",
+              "categories": ["social_media", "display"],
+              "status": "active",
+              "country": "USA",
+              "address": "651 Brannan Street, San Francisco, CA 94107",
+              "primary_contact_name": "Business Team",
+              "primary_contact_email": "business@pinterest.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-PIN-001",
+              "tax_id": "XX-XXX8901",
+              "onboarding_date": "2020-09-05",
+              "last_review_date": "2025-08-20",
+              "annual_spend_limit": 500000,
+              "risk_rating": "low"
+            }
+          }
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "There was a problem"
+  - name: "MyWave_AI_Assistant_tool_dumy_weather"
+    steps: []
+    aggregatedResponse: |-
+      {
+        "location": "${parameters.location}",
+        "temperature": 40
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "There was a problem"
+  - name: "paypal_cif2_get_approval_workflow"
+    steps: []
+    aggregatedResponse: |-
+      {
+      "approval_workflows": {
+            "cif_paid_media": {
+              "thresholds": [
+                {
+                  "min_amount": 0,
+                  "max_amount": 100000,
+                  "approvers": [
+                    {
+                      "order": 1,
+                      "role": "Marketing Manager",
+                      "approver_id": "EMP-000891",
+                      "approver_name": "Michael Chen",
+                      "sla_hours": 24
+                    }
+                  ]
+                },
+                {
+                  "min_amount": 100001,
+                  "max_amount": 500000,
+                  "approvers": [
+                    {
+                      "order": 1,
+                      "role": "Marketing Manager",
+                      "approver_id": "EMP-000891",
+                      "approver_name": "Michael Chen",
+                      "sla_hours": 24
+                    },
+                    {
+                      "order": 2,
+                      "role": "Procurement Manager",
+                      "approver_id": "EMP-000654",
+                      "approver_name": "David Kim",
+                      "sla_hours": 48
+                    }
+                  ]
+                },
+                {
+                  "min_amount": 500001,
+                  "max_amount": 1000000,
+                  "approvers": [
+                    {
+                      "order": 1,
+                      "role": "Marketing Manager",
+                      "approver_id": "EMP-000891",
+                      "approver_name": "Michael Chen",
+                      "sla_hours": 24
+                    },
+                    {
+                      "order": 2,
+                      "role": "Procurement Manager",
+                      "approver_id": "EMP-000654",
+                      "approver_name": "David Kim",
+                      "sla_hours": 48
+                    },
+                    {
+                      "order": 3,
+                      "role": "Finance Director",
+                      "approver_id": "EMP-000432",
+                      "approver_name": "Jennifer Martinez",
+                      "sla_hours": 72
+                    }
+                  ]
+                },
+                {
+                  "min_amount": 1000001,
+                  "max_amount": 999999999,
+                  "approvers": [
+                    {
+                      "order": 1,
+                      "role": "Marketing Manager",
+                      "approver_id": "EMP-000891",
+                      "approver_name": "Michael Chen",
+                      "sla_hours": 24
+                    },
+                    {
+                      "order": 2,
+                      "role": "Procurement Manager",
+                      "approver_id": "EMP-000654",
+                      "approver_name": "David Kim",
+                      "sla_hours": 48
+                    },
+                    {
+                      "order": 3,
+                      "role": "Finance Director",
+                      "approver_id": "EMP-000432",
+                      "approver_name": "Jennifer Martinez",
+                      "sla_hours": 72
+                    },
+                    {
+                      "order": 4,
+                      "role": "CMO",
+                      "approver_id": "EMP-000123",
+                      "approver_name": "Robert Thompson",
+                      "sla_hours": 96
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "There was a problem"
+  - name: "paypal_cif2_submit_for_approval"
+    steps: []
+    aggregatedResponse: |-
+      {
+      "submission_confirmations": {
+            "success": {
+              "success": true,
+              "request_id": "PR-2026-000001",
+              "submission_timestamp": "2026-02-02 10:30:00",
+              "message": "Purchase request submitted successfully",
+              "next_approver": {
+                "name": "Michael Chen",
+                "role": "Marketing Manager",
+                "email": "mchen@paypal.com",
+                "expected_response_by": "2026-02-03 10:30:00"
+              },
+              "estimated_completion": "2026-02-06",
+              "tracking_url": "https://procurement.paypal.com/requests/PR-2026-000001"
+            }
+          }
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "There was a problem"
+  - name: "paypal_cif2_get_request_status"
+    steps: []
+    aggregatedResponse: |-
+      {
+      "purchase_requests": {
+            "PR-2026-000001": {
+              "request_id": "PR-2026-000001",
+              "status": "draft",
+              "vendor_id": "VND-001001",
+              "vendor_name": "Meta Platforms Inc.",
+              "requester_id": "EMP-001234",
+              "requester_name": "Emily Rogers",
+              "category": "cif_paid_media",
+              "campaign_name": "US Brand Awareness Q2 2026",
+              "estimated_spend": 450000,
+              "currency": "USD",
+              "start_date": "2026-04-01",
+              "end_date": "2026-06-30",
+              "cost_center": "MKT-220",
+              "io_number": "META-IO-Q2-2026",
+              "payment_terms": "Net 60",
+              "capped_spend": true,
+              "documents": [
+                {"document_id": "DOC-2026-000123", "document_type": "insertion_order"},
+                {"document_id": "DOC-2026-000125", "document_type": "media_plan"}
+              ],
+              "created_date": "2026-02-02 10:00:00",
+              "last_updated": "2026-02-02 10:00:00",
+              "approval_path": [
+                {"order": 1, "role": "Marketing Manager", "approver_name": "Michael Chen", "status": "pending"},
+                {"order": 2, "role": "Procurement Manager", "approver_name": "David Kim", "status": "pending"}
+              ],
+              "notes": "Q2 brand campaign - continuation of successful Q1 strategy"
+            },
+            "PR-2026-000002": {
+              "request_id": "PR-2026-000002",
+              "status": "pending_approval",
+              "vendor_id": "VND-001002",
+              "vendor_name": "Google LLC",
+              "requester_id": "EMP-001456",
+              "requester_name": "Sarah Chen",
+              "category": "cif_paid_media",
+              "campaign_name": "Performance Max Q1 2026",
+              "estimated_spend": 520000,
+              "currency": "USD",
+              "start_date": "2026-01-15",
+              "end_date": "2026-03-31",
+              "cost_center": "MKT-320",
+              "io_number": "GOOG-IO-Q1-2026",
+              "payment_terms": "Net 30",
+              "capped_spend": true,
+              "documents": [
+                {"document_id": "DOC-2026-000098", "document_type": "insertion_order"}
+              ],
+              "created_date": "2026-01-10 11:30:00",
+              "submitted_date": "2026-01-10 14:00:00",
+              "last_updated": "2026-01-25 09:15:00",
+              "approval_path": [
+                {"order": 1, "role": "Marketing Manager", "approver_name": "Michael Chen", "status": "approved", "approved_date": "2026-01-12 10:30:00"},
+                {"order": 2, "role": "Procurement Manager", "approver_name": "David Kim", "status": "approved", "approved_date": "2026-01-15 16:45:00"},
+                {"order": 3, "role": "Finance Director", "approver_name": "Jennifer Martinez", "status": "pending"}
+              ],
+              "notes": "Q1 performance campaign - targeting new customer acquisition"
+            }
+          }
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "There was a problem"
+  - name: "paypal_cif2_get_cost_centers"
+    steps: []
+    aggregatedResponse: |-
+      {
+      "cost_centers": {
+            "Marketing": [
+              {
+                "code": "MKT-220",
+                "name": "Marketing - Brand",
+                "department": "Marketing",
+                "manager": "Michael Chen",
+                "budget_fy2026": 3500000,
+                "spent_ytd": 125000,
+                "available": 3375000
+              },
+              {
+                "code": "MKT-320",
+                "name": "Marketing - Digital",
+                "department": "Marketing",
+                "manager": "Michael Chen",
+                "budget_fy2026": 4200000,
+                "spent_ytd": 180000,
+                "available": 4020000
+              },
+              {
+                "code": "MKT-420",
+                "name": "Marketing - Brand Campaigns",
+                "department": "Brand Marketing",
+                "manager": "Lisa Park",
+                "budget_fy2026": 2800000,
+                "spent_ytd": 95000,
+                "available": 2705000
+              },
+              {
+                "code": "MKT-520",
+                "name": "Marketing - Performance",
+                "department": "Performance Marketing",
+                "manager": "Michael Chen",
+                "budget_fy2026": 5500000,
+                "spent_ytd": 220000,
+                "available": 5280000
+              }
+            ]
+          }
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "There was a problem"
+  - name: "paypal_cif2_get_vendor_details"
+    steps: []
+    aggregatedResponse: |-
+      {
+      "vendors": {
+            "VND-001001": {
+              "vendor_id": "VND-001001",
+              "vendor_name": "Meta Platforms Inc.",
+              "legal_name": "Meta Platforms, Inc.",
+              "dba_names": ["Facebook", "Instagram", "Meta"],
+              "vendor_type": "paid_media",
+              "categories": ["social_media", "display", "video"],
+              "status": "active",
+              "country": "USA",
+              "address": "1 Hacker Way, Menlo Park, CA 94025",
+              "primary_contact_name": "Enterprise Sales Team",
+              "primary_contact_email": "enterprise-sales@meta.com",
+              "payment_terms": "Net 60",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-META-001",
+              "tax_id": "XX-XXX1234",
+              "onboarding_date": "2015-06-01",
+              "last_review_date": "2025-12-15",
+              "annual_spend_limit": 5000000,
+              "risk_rating": "low"
+            },
+            "VND-001002": {
+              "vendor_id": "VND-001002",
+              "vendor_name": "Google LLC",
+              "legal_name": "Google LLC",
+              "dba_names": ["Google Ads", "YouTube", "Google Marketing Platform"],
+              "vendor_type": "paid_media",
+              "categories": ["search", "display", "video", "programmatic"],
+              "status": "active",
+              "country": "USA",
+              "address": "1600 Amphitheatre Parkway, Mountain View, CA 94043",
+              "primary_contact_name": "Google Ads Support",
+              "primary_contact_email": "ads-support@google.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-GOOG-001",
+              "tax_id": "XX-XXX5678",
+              "onboarding_date": "2012-01-15",
+              "last_review_date": "2025-11-20",
+              "annual_spend_limit": 8000000,
+              "risk_rating": "low"
+            },
+            "VND-001003": {
+              "vendor_id": "VND-001003",
+              "vendor_name": "The Trade Desk Inc.",
+              "legal_name": "The Trade Desk, Inc.",
+              "dba_names": ["TTD", "Trade Desk"],
+              "vendor_type": "paid_media",
+              "categories": ["programmatic", "display", "video"],
+              "status": "active",
+              "country": "USA",
+              "address": "42 N. Chestnut St., Ventura, CA 93001",
+              "primary_contact_name": "Client Services",
+              "primary_contact_email": "clientservices@thetradedesk.com",
+              "payment_terms": "Net 45",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-TTD-001",
+              "tax_id": "XX-XXX9012",
+              "onboarding_date": "2018-03-10",
+              "last_review_date": "2025-10-05",
+              "annual_spend_limit": 2000000,
+              "risk_rating": "low"
+            },
+            "VND-001004": {
+              "vendor_id": "VND-001004",
+              "vendor_name": "Microsoft Advertising",
+              "legal_name": "Microsoft Corporation",
+              "dba_names": ["Bing Ads", "Microsoft Ads", "LinkedIn Ads"],
+              "vendor_type": "paid_media",
+              "categories": ["search", "display", "social_media"],
+              "status": "active",
+              "country": "USA",
+              "address": "One Microsoft Way, Redmond, WA 98052",
+              "primary_contact_name": "Advertising Sales",
+              "primary_contact_email": "adsales@microsoft.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-MSFT-001",
+              "tax_id": "XX-XXX3456",
+              "onboarding_date": "2014-08-22",
+              "last_review_date": "2026-01-10",
+              "annual_spend_limit": 3000000,
+              "risk_rating": "low"
+            },
+            "VND-001005": {
+              "vendor_id": "VND-001005",
+              "vendor_name": "Amazon Advertising",
+              "legal_name": "Amazon.com Services LLC",
+              "dba_names": ["Amazon Ads", "AWS Advertising"],
+              "vendor_type": "paid_media",
+              "categories": ["display", "video", "programmatic", "streaming"],
+              "status": "active",
+              "country": "USA",
+              "address": "410 Terry Avenue North, Seattle, WA 98109",
+              "primary_contact_name": "Amazon Ads Support",
+              "primary_contact_email": "advertising-support@amazon.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-AMZN-001",
+              "tax_id": "XX-XXX7890",
+              "onboarding_date": "2017-04-15",
+              "last_review_date": "2025-12-01",
+              "annual_spend_limit": 4000000,
+              "risk_rating": "low"
+            },
+            "VND-001006": {
+              "vendor_id": "VND-001006",
+              "vendor_name": "TikTok for Business",
+              "legal_name": "TikTok Inc.",
+              "dba_names": ["TikTok Ads", "ByteDance"],
+              "vendor_type": "paid_media",
+              "categories": ["social_media", "video"],
+              "status": "active",
+              "country": "USA",
+              "address": "5800 Bristol Parkway, Culver City, CA 90230",
+              "primary_contact_name": "Business Solutions",
+              "primary_contact_email": "business@tiktok.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-TIKTOK-001",
+              "tax_id": "XX-XXX2345",
+              "onboarding_date": "2021-02-28",
+              "last_review_date": "2025-09-15",
+              "annual_spend_limit": 1500000,
+              "risk_rating": "medium"
+            },
+            "VND-001007": {
+              "vendor_id": "VND-001007",
+              "vendor_name": "Spotify Advertising",
+              "legal_name": "Spotify USA Inc.",
+              "dba_names": ["Spotify Ads", "Spotify Ad Studio"],
+              "vendor_type": "paid_media",
+              "categories": ["streaming", "podcast", "audio"],
+              "status": "active",
+              "country": "USA",
+              "address": "4 World Trade Center, New York, NY 10007",
+              "primary_contact_name": "Ad Sales",
+              "primary_contact_email": "adsales@spotify.com",
+              "payment_terms": "Net 45",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-SPOT-001",
+              "tax_id": "XX-XXX6789",
+              "onboarding_date": "2020-05-10",
+              "last_review_date": "2025-11-30",
+              "annual_spend_limit": 1000000,
+              "risk_rating": "low"
+            },
+            "VND-001008": {
+              "vendor_id": "VND-001008",
+              "vendor_name": "Snap Inc.",
+              "legal_name": "Snap Inc.",
+              "dba_names": ["Snapchat", "Snapchat Ads"],
+              "vendor_type": "paid_media",
+              "categories": ["social_media", "video", "display"],
+              "status": "active",
+              "country": "USA",
+              "address": "3000 31st Street, Santa Monica, CA 90405",
+              "primary_contact_name": "Advertising Partnerships",
+              "primary_contact_email": "adspartnerships@snap.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-SNAP-001",
+              "tax_id": "XX-XXX4567",
+              "onboarding_date": "2019-07-20",
+              "last_review_date": "2025-10-25",
+              "annual_spend_limit": 800000,
+              "risk_rating": "low"
+            },
+            "VND-001009": {
+              "vendor_id": "VND-001009",
+              "vendor_name": "Pinterest Inc.",
+              "legal_name": "Pinterest, Inc.",
+              "dba_names": ["Pinterest Ads"],
+              "vendor_type": "paid_media",
+              "categories": ["social_media", "display"],
+              "status": "active",
+              "country": "USA",
+              "address": "651 Brannan Street, San Francisco, CA 94107",
+              "primary_contact_name": "Business Team",
+              "primary_contact_email": "business@pinterest.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-PIN-001",
+              "tax_id": "XX-XXX8901",
+              "onboarding_date": "2020-09-05",
+              "last_review_date": "2025-08-20",
+              "annual_spend_limit": 500000,
+              "risk_rating": "low"
+            },
+            "VND-001010": {
+              "vendor_id": "VND-001010",
+              "vendor_name": "Acme Media Solutions",
+              "legal_name": "Acme Media Solutions LLC",
+              "dba_names": ["Acme Media"],
+              "vendor_type": "paid_media",
+              "categories": ["display", "programmatic"],
+              "status": "inactive",
+              "country": "USA",
+              "address": "123 Main Street, Chicago, IL 60601",
+              "primary_contact_name": "Sales Team",
+              "primary_contact_email": "sales@acmemedia.com",
+              "payment_terms": "Net 30",
+              "currency": "USD",
+              "ariba_vendor_id": "ARIBA-ACME-001",
+              "tax_id": "XX-XXX0123",
+              "onboarding_date": "2022-01-15",
+              "last_review_date": "2025-06-01",
+              "annual_spend_limit": 200000,
+              "risk_rating": "high",
+              "inactive_reason": "Contract expired - pending renewal"
+            }
+          }
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "There was a problem"
+  - name: "paypal_cif2_get_prior_purchases"
+    steps: []
+    aggregatedResponse: |-
+      {
+      "prior_purchases": {
+            "VND-001001": [
+              {
+                "purchase_id": "PR-2025-004521",
+                "vendor_id": "VND-001001",
+                "vendor_name": "Meta Platforms Inc.",
+                "requester_id": "EMP-001234",
+                "requester_name": "Emily Rogers",
+                "category": "cif_paid_media",
+                "campaign_name": "US Brand Awareness Q4 2025",
+                "estimated_spend": 425000,
+                "actual_spend": 418750.50,
+                "currency": "USD",
+                "start_date": "2025-10-01",
+                "end_date": "2025-12-31",
+                "cost_center": "MKT-220",
+                "io_number": "META-IO-Q4-2025",
+                "status": "completed",
+                "created_date": "2025-09-15 10:30:00",
+                "approved_date": "2025-09-18 14:22:00",
+                "completed_date": "2026-01-15 09:00:00"
+              },
+              {
+                "purchase_id": "PR-2025-003210",
+                "vendor_id": "VND-001001",
+                "vendor_name": "Meta Platforms Inc.",
+                "requester_id": "EMP-001234",
+                "requester_name": "Emily Rogers",
+                "category": "cif_paid_media",
+                "campaign_name": "US Summer Campaign Q3 2025",
+                "estimated_spend": 380000,
+                "actual_spend": 372450.25,
+                "currency": "USD",
+                "start_date": "2025-07-01",
+                "end_date": "2025-09-30",
+                "cost_center": "MKT-220",
+                "io_number": "META-IO-Q3-2025",
+                "status": "completed",
+                "created_date": "2025-06-10 11:15:00",
+                "approved_date": "2025-06-13 09:45:00",
+                "completed_date": "2025-10-20 16:30:00"
+              },
+              {
+                "purchase_id": "PR-2025-001890",
+                "vendor_id": "VND-001001",
+                "vendor_name": "Meta Platforms Inc.",
+                "requester_id": "EMP-001234",
+                "requester_name": "Emily Rogers",
+                "category": "cif_paid_media",
+                "campaign_name": "US Spring Campaign Q2 2025",
+                "estimated_spend": 350000,
+                "actual_spend": 345200.75,
+                "currency": "USD",
+                "start_date": "2025-04-01",
+                "end_date": "2025-06-30",
+                "cost_center": "MKT-220",
+                "io_number": "META-IO-Q2-2025",
+                "status": "completed",
+                "created_date": "2025-03-05 14:00:00",
+                "approved_date": "2025-03-08 11:30:00",
+                "completed_date": "2025-07-18 10:15:00"
+              },
+              {
+                "purchase_id": "PR-2025-000456",
+                "vendor_id": "VND-001001",
+                "vendor_name": "Meta Platforms Inc.",
+                "requester_id": "EMP-001234",
+                "requester_name": "Emily Rogers",
+                "category": "cif_paid_media",
+                "campaign_name": "US New Year Campaign Q1 2025",
+                "estimated_spend": 320000,
+                "actual_spend": 315890.00,
+                "currency": "USD",
+                "start_date": "2025-01-01",
+                "end_date": "2025-03-31",
+                "cost_center": "MKT-220",
+                "io_number": "META-IO-Q1-2025",
+                "status": "completed",
+                "created_date": "2024-12-01 09:00:00",
+                "approved_date": "2024-12-04 15:45:00",
+                "completed_date": "2025-04-22 11:00:00"
+              }
+            ],
+            "VND-001002": [
+              {
+                "purchase_id": "PR-2025-004890",
+                "vendor_id": "VND-001002",
+                "vendor_name": "Google LLC",
+                "requester_id": "EMP-001456",
+                "requester_name": "Sarah Chen",
+                "category": "cif_paid_media",
+                "campaign_name": "Performance Max Q4 2025",
+                "estimated_spend": 550000,
+                "actual_spend": 542300.00,
+                "currency": "USD",
+                "start_date": "2025-10-01",
+                "end_date": "2025-12-31",
+                "cost_center": "MKT-320",
+                "io_number": "GOOG-IO-Q4-2025",
+                "status": "completed",
+                "created_date": "2025-09-20 13:30:00",
+                "approved_date": "2025-09-24 10:00:00",
+                "completed_date": "2026-01-20 14:30:00"
+              },
+              {
+                "purchase_id": "PR-2025-003456",
+                "vendor_id": "VND-001002",
+                "vendor_name": "Google LLC",
+                "requester_id": "EMP-001456",
+                "requester_name": "Sarah Chen",
+                "category": "cif_paid_media",
+                "campaign_name": "Search Campaign Q3 2025",
+                "estimated_spend": 480000,
+                "actual_spend": 471500.50,
+                "currency": "USD",
+                "start_date": "2025-07-01",
+                "end_date": "2025-09-30",
+                "cost_center": "MKT-320",
+                "io_number": "GOOG-IO-Q3-2025",
+                "status": "completed",
+                "created_date": "2025-06-15 10:00:00",
+                "approved_date": "2025-06-18 16:20:00",
+                "completed_date": "2025-10-25 09:45:00"
+              },
+              {
+                "purchase_id": "PR-2025-002100",
+                "vendor_id": "VND-001002",
+                "vendor_name": "Google LLC",
+                "requester_id": "EMP-002134",
+                "requester_name": "Amanda Foster",
+                "category": "cif_paid_media",
+                "campaign_name": "YouTube Brand Lift Q2 2025",
+                "estimated_spend": 620000,
+                "actual_spend": 615200.25,
+                "currency": "USD",
+                "start_date": "2025-04-01",
+                "end_date": "2025-06-30",
+                "cost_center": "MKT-520",
+                "io_number": "GOOG-IO-Q2-2025-YT",
+                "status": "completed",
+                "created_date": "2025-03-10 08:30:00",
+                "approved_date": "2025-03-14 12:15:00",
+                "completed_date": "2025-07-28 15:00:00"
+              }
+            ],
+            "VND-001003": [
+              {
+                "purchase_id": "PR-2025-004100",
+                "vendor_id": "VND-001003",
+                "vendor_name": "The Trade Desk Inc.",
+                "requester_id": "EMP-002134",
+                "requester_name": "Amanda Foster",
+                "category": "cif_paid_media",
+                "campaign_name": "Programmatic Display Q4 2025",
+                "estimated_spend": 280000,
+                "actual_spend": 275400.00,
+                "currency": "USD",
+                "start_date": "2025-10-01",
+                "end_date": "2025-12-31",
+                "cost_center": "MKT-520",
+                "io_number": "TTD-IO-Q4-2025",
+                "status": "completed",
+                "created_date": "2025-09-12 09:00:00",
+                "approved_date": "2025-09-15 11:30:00",
+                "completed_date": "2026-01-18 10:00:00"
+              }
+            ],
+            "VND-001006": [
+              {
+                "purchase_id": "PR-2025-003800",
+                "vendor_id": "VND-001006",
+                "vendor_name": "TikTok for Business",
+                "requester_id": "EMP-001789",
+                "requester_name": "James Wilson",
+                "category": "cif_paid_media",
+                "campaign_name": "Gen Z Engagement Q4 2025",
+                "estimated_spend": 200000,
+                "actual_spend": 195600.50,
+                "currency": "USD",
+                "start_date": "2025-10-01",
+                "end_date": "2025-12-31",
+                "cost_center": "MKT-420",
+                "io_number": "TIKTOK-IO-Q4-2025",
+                "status": "completed",
+                "created_date": "2025-09-08 14:30:00",
+                "approved_date": "2025-09-12 09:00:00",
+                "completed_date": "2026-01-22 11:30:00"
+              }
+            ]
+          }
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "There was a problem"
+  - name: "Get_Billing_Details_SP"
+    steps:
+      - id: "Get_Outbound_Details"
+        infoPluginName: "GenericHttpInfoPlugin"
+        namedParameterExpressions:
+          - name: "baseUrl"
+            expression: "${config.SAP_S4HANA_BASE_URL}"
+            type: "java.lang.String"
+          - name: "path"
+            expression: "/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV/A_OutbDeliveryHeader"
+            type: "java.lang.String"
+          - name: "httpMethod"
+            expression: "GET"
+            type: "java.lang.String"
+          - name: "headers"
+            expression: |2-
+
+              {
+                  "Accept": "application/json",
+                  "sap-client": "500",
+                  "Authorization": "Basic UkNIQU5EOnN1dmFmMUoxNjc0MiE="
+              }
+            type: "java.util.Map"
+          - name: "queryParameters"
+            expression: |-
+              <#if parameters.deliveryFromDate?has_content && parameters.deliveryToDate?has_content>
+              {
+                "$select": "DeliveryDocument,ShipToParty,SoldToParty,ActualGoodsMovementDate,DeliveryDocumentType,OverallSDProcessStatus",
+                "$filter": "ActualGoodsMovementDate ge datetime'${parameters.deliveryFromDate}T00:00:00' and ActualGoodsMovementDate le datetime'${parameters.deliveryToDate}T23:59:59'",
+                "$format": "json"
+              }
+              <#else>
+              {}
+              </#if>
+            type: "java.util.Map"
+          - name: "requestBody"
+            expression: |2-
+
+              {}
+            type: "java.lang.String"
+      - id: "Get_Billing_Details"
+        infoPluginName: "GenericHttpInfoPlugin"
+        namedParameterExpressions:
+          - name: "baseUrl"
+            expression: "${config.SAP_S4HANA_BASE_URL}"
+            type: "java.lang.String"
+          - name: "path"
+            expression: "/sap/opu/odata/sap/API_BILLING_DOCUMENT_SRV/A_BillingDocumentItem"
+            type: "java.lang.String"
+          - name: "httpMethod"
+            expression: "GET"
+            type: "java.lang.String"
+          - name: "headers"
+            expression: |2-
+
+              {
+                  "Accept": "application/json",
+                  "sap-client": "500",
+                  "Authorization": "Basic UkNIQU5EOnN1dmFmMUoxNjc0MiE="
+              }
+            type: "java.util.Map"
+          - name: "queryParameters"
+            expression: "<#if response.Get_Outbound_Details.body.d.results?has_content>\n\
+              <#assign filterString = \n  '(' + \n  response.Get_Outbound_Details.body.d.results\n\
+              \    ?map(d -> \"ReferenceSDDocument eq '\" + d.DeliveryDocument + \"\
+              '\")\n    ?join(' or ')\n  + \") and ReferenceSDDocumentCategory eq\
+              \ 'J'\"\n>\n{\n  \"$select\": \"BillingDocument,ReferenceSDDocument,ReferenceSDDocumentCategory\"\
+              ,\n  \"$filter\": \"${filterString}\",\n  \"$format\": \"json\"\n}\n\
+              <#else>\n{\n  \"$filter\": \"1 eq 2\",\n  \"$format\": \"json\"\n}\n\
+              </#if>"
+            type: "java.util.Map"
+          - name: "requestBody"
+            expression: |2-
+
+              {}
+            type: "java.lang.String"
+    aggregatedResponse: "<#-- ========================= -->\n<#-- CHECK STATUS = 200\
+      \ ONLY -->\n<#-- ========================= -->\n\n<#assign outboundResults =\
+      \ []>\n<#if response.Get_Outbound_Details.statusCode == 200 \n    && response.Get_Outbound_Details.body?has_content\n\
+      \    && response.Get_Outbound_Details.body.d?has_content\n    && response.Get_Outbound_Details.body.d.results?has_content>\n\
+      \n  <#assign outboundResults = response.Get_Outbound_Details.body.d.results>\n\
+      </#if>\n\n\n<#assign billingResults = []>\n<#if response.Get_Billing_Details.statusCode\
+      \ == 200 \n    && response.Get_Billing_Details.body?has_content\n    && response.Get_Billing_Details.body.d?has_content\n\
+      \    && response.Get_Billing_Details.body.d.results?has_content>\n\n  <#assign\
+      \ billingResults = response.Get_Billing_Details.body.d.results>\n</#if>\n\n\n\
+      <#-- ========================= -->\n<#-- BUILD BILLING MAP -->\n<#-- =========================\
+      \ -->\n\n<#assign billingByDelivery = {}>\n\n<#if billingResults?has_content>\n\
+      \  <#list billingResults as bill>\n    <#if bill.ReferenceSDDocument?has_content>\n\
+      \      <#assign existing = (billingByDelivery[bill.ReferenceSDDocument])![]>\n\
+      \      <#assign billingByDelivery = billingByDelivery + {\n        (bill.ReferenceSDDocument):\
+      \ (existing + [bill])\n      }>\n    </#if>\n  </#list>\n</#if>\n\n\n<#-- =========================\
+      \ -->\n<#-- FINAL RESPONSE -->\n<#-- ========================= -->\n\n<#if outboundResults?has_content>\n\
+      \n{\n  \"totalOutboundRecords\": ${outboundResults?size},\n  \"totalBillingRecords\"\
+      :  ${billingResults?size},\n\n  \"deliveries\": [\n    <#list outboundResults\
+      \ as out>\n\n      <#assign relatedBilling = (billingByDelivery[out.DeliveryDocument!''\
+      \ ])![]>\n\n      {\n        \"DeliveryDocument\":        \"${out.DeliveryDocument!''}\"\
+      ,\n        \"ShipToParty\":             \"${out.ShipToParty!''}\",\n       \
+      \ \"SoldToParty\":             \"${out.SoldToParty!''}\",\n        \"ActualGoodsMovementDate\"\
+      : \"${out.ActualGoodsMovementDate!''}\",\n        \"DeliveryDocumentType\":\
+      \    \"${out.DeliveryDocumentType!''}\",\n        \"OverallSDProcessStatus\"\
+      :  \"${out.OverallSDProcessStatus!''}\",\n\n        \"billingDetails\": [\n\
+      \          <#if relatedBilling?has_content>\n            <#list relatedBilling\
+      \ as bill>\n              {\n                \"BillingDocument\":          \
+      \   \"${bill.BillingDocument!''}\",\n                \"ReferenceSDDocument\"\
+      :         \"${bill.ReferenceSDDocument!''}\",\n                \"ReferenceSDDocumentCategory\"\
+      : \"${bill.ReferenceSDDocumentCategory!''}\"\n              }<#if bill_has_next>,</#if>\n\
+      \            </#list>\n          </#if>\n        ],\n\n        \"isBilled\"\
+      : ${(relatedBilling?size gt 0)?c},\n\n        \"isEligibleForBilling\":\n  \
+      \        ${(out.OverallSDProcessStatus!'' == \"C\" && relatedBilling?size ==\
+      \ 0)?c}\n\n      }<#if out_has_next>,</#if>\n\n    </#list>\n  ]\n}\n\n<#else>\n\
+      \n{\n  \"message\": \"No outbound deliveries found\"\n}\n\n</#if>"
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "Infoplugin issue, Facing some issues while fetching the billing\
+            \ details. "
+  - name: "Create_an_activity_Appointment"
+    steps:
+      - id: "postCreateActivity"
+        infoPluginName: "GenericHttpInfoPlugin"
+        namedParameterExpressions:
+          - name: "baseUrl"
+            expression: "http://localhost:3001"
+            type: "java.lang.String"
+          - name: "path"
+            expression: "/sap/opu/odata/sap/API_ACTIVITY_APPOINTMENT_SRV/A_AppointmentActivity"
+            type: "java.lang.String"
+          - name: "httpMethod"
+            expression: "POST"
+            type: "java.lang.String"
+          - name: "headers"
+            expression: |2-
+
+              {
+                  "Content-Type":"application/json"
+              }
+            type: "java.util.Map"
+          - name: "queryParameters"
+            expression: |2-
+
+              {}
+            type: "java.util.Map"
+          - name: "requestBody"
+            expression: |2-
+
+              {}
+            type: "java.lang.String"
+    aggregatedResponse: |-
+      <#assign postCreateActivityStatusCode = response.postCreateActivity.statusCode>
+      <#assign postCreateActivitySuccess = (postCreateActivityStatusCode gte 200 && postCreateActivityStatusCode lt 300)>
+      {
+        "postCreateActivityStatus": ${postCreateActivitySuccess?then('true','false')},
+        <#if postCreateActivitySuccess && response.postCreateActivity.body??>
+        <#assign postCreateActivityBody = response.postCreateActivity.body>
+        "postCreateActivity": {
+          "d": {
+            "ActivityID": "${(postCreateActivityBody.d.ActivityID)!''}",
+            "BusinessPartner": "${(postCreateActivityBody.d.BusinessPartner)!''}",
+            "ActivityType": "${(postCreateActivityBody.d.ActivityType)!''}",
+            "Status": "${(postCreateActivityBody.d.Status)!''}"
+          }
+        },
+        </#if>
+        "postCreateActivityStatusCode": ${postCreateActivityStatusCode}
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "Unable to create the visit activity at the moment. Please\
+            \ review the details and try again."
+infoPlugins:
+  - name: "Get SAP Business One Access Token"
+    type: "EXTERNAL_LIBRARY"
+    infoPluginExternalName: "GenericHttpInfoPlugin"
+  - name: "GenericHttpInfoPlugin"
+    type: "EXTERNAL_LIBRARY"
+    infoPluginExternalName: "GenericHttpInfoPlugin"

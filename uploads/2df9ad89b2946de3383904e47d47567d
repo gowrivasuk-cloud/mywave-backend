@@ -1,0 +1,119 @@
+---
+infoPluginSteps:
+  - name: "Business_Partner_Code_Gowri"
+    steps:
+      - id: "Get_bp"
+        infoPluginName: "Get SAP Business One Access Token"
+        namedParameterExpressions:
+          - name: "baseUrl"
+            expression: "${config.SAP_S4HANA_BASE_URL}"
+            type: "java.lang.String"
+          - name: "headers"
+            expression: |2-
+
+              {
+                  "Accept": "application/json",
+                  "sap-client": "500",
+                  "Authorization": "Basic UkNIQU5EOnN1dmFmMUoxNjc0MiE="
+              }
+            type: "java.util.Map"
+          - name: "httpMethod"
+            expression: "GET"
+            type: "java.lang.String"
+          - name: "path"
+            expression: "/sap/opu/odata/sap/API_BUSINESS_PARTNER/A_BusinessPartner"
+            type: "java.lang.String"
+          - name: "queryParameters"
+            expression: |2-
+
+              {
+                "$select": "BusinessPartner,BusinessPartnerFullName,Customer,Supplier",
+                "$filter": "BusinessPartner eq '${parameters.BusinessPartner}'",
+                "$format": "json"
+              }
+            type: "java.util.Map"
+          - name: "requestBody"
+            expression: |2-
+
+              {}
+            type: "java.lang.String"
+    aggregatedResponse: |-
+      <#if response.Get_bp.body.d.results?has_content>
+      <#assign bp = response.Get_bp.body.d.results[0]>
+      {
+        "BusinessPartner": "${bp.BusinessPartner}",
+        "BusinessPartnerName": "${bp.BusinessPartnerFullName}"
+      }
+      <#else>
+      {
+        "message": "Customer not found"
+      }
+      </#if>
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "Something went wrong while retrieving customer details. Please\
+            \ verify the Business Partner information and try again."
+  - name: "Create_an_activity_Appointment"
+    steps:
+      - id: "postCreateActivity"
+        infoPluginName: "GenericHttpInfoPlugin"
+        namedParameterExpressions:
+          - name: "baseUrl"
+            expression: "http://localhost:3001"
+            type: "java.lang.String"
+          - name: "path"
+            expression: "/sap/opu/odata/sap/API_ACTIVITY_APPOINTMENT_SRV/A_AppointmentActivity"
+            type: "java.lang.String"
+          - name: "httpMethod"
+            expression: "POST"
+            type: "java.lang.String"
+          - name: "headers"
+            expression: |2-
+
+              {
+                  "Content-Type":"application/json"
+              }
+            type: "java.util.Map"
+          - name: "queryParameters"
+            expression: |2-
+
+              {}
+            type: "java.util.Map"
+          - name: "requestBody"
+            expression: |2-
+
+              {}
+            type: "java.lang.String"
+    aggregatedResponse: |-
+      <#assign postCreateActivityStatusCode = response.postCreateActivity.statusCode>
+      <#assign postCreateActivitySuccess = (postCreateActivityStatusCode gte 200 && postCreateActivityStatusCode lt 300)>
+      {
+        "postCreateActivityStatus": ${postCreateActivitySuccess?then('true','false')},
+        <#if postCreateActivitySuccess && response.postCreateActivity.body??>
+        <#assign postCreateActivityBody = response.postCreateActivity.body>
+        "postCreateActivity": {
+          "d": {
+            "ActivityID": "${(postCreateActivityBody.d.ActivityID)!''}",
+            "BusinessPartner": "${(postCreateActivityBody.d.BusinessPartner)!''}",
+            "ActivityType": "${(postCreateActivityBody.d.ActivityType)!''}",
+            "Status": "${(postCreateActivityBody.d.Status)!''}"
+          }
+        },
+        </#if>
+        "postCreateActivityStatusCode": ${postCreateActivityStatusCode}
+      }
+    errorClassifier: "NON_RECOVERABLE"
+    responseGenerator:
+      errorMap:
+        - exceptionType: "java.lang.Exception"
+          errorMessage: "Unable to create the visit activity at the moment. Please\
+            \ review the details and try again."
+infoPlugins:
+  - name: "Get SAP Business One Access Token"
+    type: "EXTERNAL_LIBRARY"
+    infoPluginExternalName: "GenericHttpInfoPlugin"
+  - name: "GenericHttpInfoPlugin"
+    type: "EXTERNAL_LIBRARY"
+    infoPluginExternalName: "GenericHttpInfoPlugin"
